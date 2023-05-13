@@ -83,6 +83,8 @@ class _StoryScreenState extends State<StoryScreen>
       backgroundColor: Colors.black,
       body: GestureDetector(
         onTapDown: (details) => _onTapDown(details, story),
+        onLongPressStart: (details) => _onLongPress(details, story),
+        onLongPressEnd: (details) => _onLongPressEnd(details, story),
         child: Stack(
           children: <Widget>[
             PageView.builder(
@@ -165,34 +167,47 @@ class _StoryScreenState extends State<StoryScreen>
           _loadStory(
               story: widget
                   .stories[widget.users[_currentUserIndex]]![_currentIndex]);
+        } else if (_currentIndex - 1 < 0 && _currentUserIndex - 1 >= 0) {
+          _currentUserIndex -= 1;
+          _currentIndex =
+              widget.stories[widget.users[_currentUserIndex]]!.length - 1;
+          _loadStory(
+              story: widget
+                  .stories[widget.users[_currentUserIndex]]![_currentIndex]);
+        } else {
+          _currentIndex = 0;
+          _currentUserIndex = 0;
+          _loadStory(
+              story: widget
+                  .stories[widget.users[_currentUserIndex]]![_currentIndex]);
         }
       });
     } else if (dx > 2 * screenWidth / 3) {
       setState(() {
-        if (_currentIndex + 1 < widget.stories.length) {
+        if (_currentIndex + 1 <
+            widget.stories[widget.users[_currentUserIndex]]!.length) {
           _currentIndex += 1;
           _loadStory(
               story: widget
                   .stories[widget.users[_currentUserIndex]]![_currentIndex]);
-        } else {
+        } else if (_currentIndex + 1 >=
+                widget.stories[widget.users[_currentUserIndex]]!.length &&
+            _currentUserIndex + 1 < widget.users.length) {
           // Out of bounds - loop story
           // You can also Navigator.of(context).pop() here
           _currentIndex = 0;
+          _currentUserIndex += 1;
+          _loadStory(
+              story: widget
+                  .stories[widget.users[_currentUserIndex]]![_currentIndex]);
+        } else {
+          _currentIndex = 0;
+          // TODO: This may be changed since we don't want to start from the beginning
           _loadStory(
               story: widget
                   .stories[widget.users[_currentUserIndex]]![_currentIndex]);
         }
       });
-    } else {
-      if (story.isVideo) {
-        if (_videoController!.value.isPlaying) {
-          _videoController?.pause();
-          _animController?.stop();
-        } else {
-          _videoController?.play();
-          _animController?.forward();
-        }
-      }
     }
   }
 
@@ -223,5 +238,15 @@ class _StoryScreenState extends State<StoryScreen>
         curve: Curves.easeInOut,
       );
     }
+  }
+
+  void _onLongPress(LongPressStartDetails details, Story story) {
+    _videoController?.pause();
+    _animController?.stop();
+  }
+
+  void _onLongPressEnd(LongPressEndDetails details, Story story) {
+    _videoController?.play();
+    _animController?.forward();
   }
 }
