@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mini_insta_stories/story.dart';
+import 'package:mini_insta_stories/user_info.dart';
 import 'package:video_player/video_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:mini_insta_stories/animated_bar.dart';
@@ -76,7 +77,8 @@ class _StoryScreenState extends State<StoryScreen>
 
   @override
   Widget build(BuildContext context) {
-    final Story story = widget.stories[_currentIndex];
+    final Story story =
+        widget.stories[widget.users[_currentUserIndex]]![_currentIndex];
     return Scaffold(
       backgroundColor: Colors.black,
       body: GestureDetector(
@@ -88,7 +90,9 @@ class _StoryScreenState extends State<StoryScreen>
               physics: NeverScrollableScrollPhysics(),
               itemCount: widget.stories.length,
               itemBuilder: (context, i) {
-                final Story story = widget.stories[i];
+                final Story story =
+                    widget.stories[widget.users[_currentUserIndex]]![i];
+                // TODO: will be changed currentUserIndex should be changed. This might be making it go back to first.
                 if (story.isVideo) {
                   if (_videoController != null &&
                       _videoController!.value.isInitialized) {
@@ -117,7 +121,7 @@ class _StoryScreenState extends State<StoryScreen>
               child: Column(
                 children: <Widget>[
                   Row(
-                    children: widget.stories
+                    children: widget.stories[widget.users[_currentUserIndex]]!
                         .asMap()
                         .map((i, e) {
                           return MapEntry(
@@ -138,7 +142,9 @@ class _StoryScreenState extends State<StoryScreen>
                       horizontal: 1.5,
                       vertical: 10.0,
                     ),
-                    child: UserInfo(user: story.user, key: UniqueKey()),
+                    child: UserInfo(
+                        user: widget.users[_currentUserIndex],
+                        key: UniqueKey()),
                   ),
                 ],
               ),
@@ -156,19 +162,25 @@ class _StoryScreenState extends State<StoryScreen>
       setState(() {
         if (_currentIndex - 1 >= 0) {
           _currentIndex -= 1;
-          _loadStory(story: widget.stories[_currentIndex]);
+          _loadStory(
+              story: widget
+                  .stories[widget.users[_currentUserIndex]]![_currentIndex]);
         }
       });
     } else if (dx > 2 * screenWidth / 3) {
       setState(() {
         if (_currentIndex + 1 < widget.stories.length) {
           _currentIndex += 1;
-          _loadStory(story: widget.stories[_currentIndex]);
+          _loadStory(
+              story: widget
+                  .stories[widget.users[_currentUserIndex]]![_currentIndex]);
         } else {
           // Out of bounds - loop story
           // You can also Navigator.of(context).pop() here
           _currentIndex = 0;
-          _loadStory(story: widget.stories[_currentIndex]);
+          _loadStory(
+              story: widget
+                  .stories[widget.users[_currentUserIndex]]![_currentIndex]);
         }
       });
     } else {
