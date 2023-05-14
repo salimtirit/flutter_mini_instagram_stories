@@ -11,11 +11,15 @@ class StoryScreen extends StatefulWidget {
   final User user;
   final List<Story> stories;
   final CarouselSliderController? controller;
+  final int lastIndex;
+  final Function updateLastIndex;
 
   const StoryScreen({
     required this.stories,
     required this.user,
     required this.controller,
+    required this.lastIndex,
+    required this.updateLastIndex,
   });
 
   @override
@@ -34,9 +38,10 @@ class _StoryScreenState extends State<StoryScreen>
     super.initState();
     _pageController = PageController();
     _animController = AnimationController(vsync: this);
+    _currentIndex = widget.lastIndex;
 
     // TODO: add null check here.
-    final Story firstStory = widget.stories.first;
+    final Story firstStory = widget.stories[_currentIndex];
     _loadStory(story: firstStory, animateToPage: false);
 
     _animController?.addStatusListener((status) {
@@ -47,6 +52,7 @@ class _StoryScreenState extends State<StoryScreen>
           if (_currentIndex + 1 < widget.stories.length) {
             _currentIndex += 1;
             // TODO: null check
+            widget.updateLastIndex(widget.user, _currentIndex);
             _loadStory(story: widget.stories[_currentIndex]);
           } else {
             widget.controller?.nextPage();
@@ -77,7 +83,7 @@ class _StoryScreenState extends State<StoryScreen>
           children: <Widget>[
             PageView.builder(
               controller: _pageController,
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: widget.stories.length,
               itemBuilder: (context, i) {
                 final Story story = widget.stories[i];
@@ -148,6 +154,7 @@ class _StoryScreenState extends State<StoryScreen>
       setState(() {
         if (_currentIndex - 1 >= 0) {
           _currentIndex -= 1;
+          widget.updateLastIndex(widget.user, _currentIndex);
           _loadStory(story: widget.stories[_currentIndex]);
         } else {
           widget.controller?.previousPage();
@@ -157,6 +164,7 @@ class _StoryScreenState extends State<StoryScreen>
       setState(() {
         if (_currentIndex + 1 < widget.stories.length) {
           _currentIndex += 1;
+          widget.updateLastIndex(widget.user, _currentIndex);
           _loadStory(story: widget.stories[_currentIndex]);
         } else {
           widget.controller?.nextPage();
