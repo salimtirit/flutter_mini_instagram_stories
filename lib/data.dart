@@ -37,6 +37,11 @@ final Map<User, List<Story>> stories = {
       url:
           'https://static.videezy.com/system/resources/previews/000/007/536/original/rockybeach.mp4',
       isVideo: true,
+    ),
+    Story(
+      url:
+          'https://editorial-cdn.shutterstock.com/wm-preview-webm/13913604f/MaT8Q5wdM9z3g037MzMzMDI=/Shutterstock_13913604f.webm',
+      isVideo: true,
     )
   ],
   users[1]: [
