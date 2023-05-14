@@ -87,8 +87,7 @@ class _StoryScreenState extends State<StoryScreen>
             print("Up Swipe");
             if (widget.stories[_currentIndex].caption != null) {
               String url = widget.stories[_currentIndex].caption!;
-              Uri _url = Uri.parse(url);
-              _launchUrl(_url);
+              _launchUrl(url);
             }
           }
         },
@@ -155,7 +154,10 @@ class _StoryScreenState extends State<StoryScreen>
               ),
             ),
             widget.stories[_currentIndex].caption != null
-                ? CaptionArrow(key: UniqueKey())
+                ? CaptionArrow(
+                    url: widget.stories[_currentIndex].caption!,
+                    key: UniqueKey(),
+                  )
                 : const SizedBox.shrink(),
           ],
         ),
@@ -228,7 +230,8 @@ class _StoryScreenState extends State<StoryScreen>
     _animController?.forward();
   }
 
-  Future<void> _launchUrl(_url) async {
+  Future<void> _launchUrl(url) async {
+    Uri _url = Uri.parse(url);
     if (!await launchUrl(_url, mode: LaunchMode.externalApplication)) {
       throw Exception('Could not launch $_url');
     }
