@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mini_insta_stories/caption_arrow.dart';
 import 'package:mini_insta_stories/story.dart';
 import 'package:mini_insta_stories/user_info.dart';
 import 'package:video_player/video_player.dart';
@@ -6,6 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:mini_insta_stories/animated_bar.dart';
 import 'package:mini_insta_stories/user.dart';
 import 'package:flutter_carousel_slider/carousel_slider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class StoryScreen extends StatefulWidget {
   final User user;
@@ -79,6 +81,17 @@ class _StoryScreenState extends State<StoryScreen>
         onTapDown: (details) => _onTapDown(details, story),
         onLongPressStart: (details) => _onLongPress(details, story),
         onLongPressEnd: (details) => _onLongPressEnd(details, story),
+        onVerticalDragUpdate: (details) {
+          int sensitivity = 8;
+          if (details.delta.dy < -sensitivity) {
+            print("Up Swipe");
+            if (widget.stories[_currentIndex].caption != null) {
+              String url = widget.stories[_currentIndex].caption!;
+              Uri _url = Uri.parse(url);
+              _launchUrl(_url);
+            }
+          }
+        },
         child: Stack(
           children: <Widget>[
             PageView.builder(
@@ -141,6 +154,9 @@ class _StoryScreenState extends State<StoryScreen>
                 ],
               ),
             ),
+            widget.stories[_currentIndex].caption != null
+                ? CaptionArrow(key: UniqueKey())
+                : const SizedBox.shrink(),
           ],
         ),
       ),
@@ -210,5 +226,11 @@ class _StoryScreenState extends State<StoryScreen>
   void _onLongPressEnd(LongPressEndDetails details, Story story) {
     _videoController?.play();
     _animController?.forward();
+  }
+
+  Future<void> _launchUrl(_url) async {
+    if (!await launchUrl(_url, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $_url');
+    }
   }
 }
