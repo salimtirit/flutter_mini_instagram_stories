@@ -32,14 +32,6 @@ class UserInfo extends StatelessWidget {
             ),
           ),
         ),
-        IconButton(
-          icon: const Icon(
-            Icons.close,
-            size: 30.0,
-            color: Colors.white,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
       ],
     );
   }
