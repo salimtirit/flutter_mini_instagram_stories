@@ -29,11 +29,7 @@ class MyApp extends StatelessWidget {
           children: [
             ...users.map((User u) => StoryScreen(
                 stories: stories[u]!, user: u, controller: _controller)),
-          ]
-          // [
-          //   StoryScreen(stories: stories, users: users),
-          // ],
-          ),
+          ]),
     );
   }
 }
