@@ -12,7 +12,11 @@ class StoryScreen extends StatefulWidget {
   final List<Story> stories;
   final CarouselSliderController? controller;
 
-  const StoryScreen({required this.stories, required this.user, required this.controller});
+  const StoryScreen({
+    required this.stories,
+    required this.user,
+    required this.controller,
+  });
 
   @override
   _StoryScreenState createState() => _StoryScreenState();
@@ -24,7 +28,6 @@ class _StoryScreenState extends State<StoryScreen>
   AnimationController? _animController;
   VideoPlayerController? _videoController;
   int _currentIndex = 0;
-  // int _currentUserIndex = 0;
 
   @override
   void initState() {
@@ -45,21 +48,8 @@ class _StoryScreenState extends State<StoryScreen>
             _currentIndex += 1;
             // TODO: null check
             _loadStory(story: widget.stories[_currentIndex]);
-          } // TODO: Go back to the previous.
-          // else if (_currentUserIndex + 1 < widget.users.length) {
-          //   _currentIndex = 0;
-          //   _currentUserIndex += 1;
-          //   _loadStory(
-          //       story: widget
-          //           .stories[widget.users[_currentUserIndex]]![_currentIndex]);
-          // }
-          else {
-            // Out of bounds - loop story
-            // You can also Navigator.of(context).pop() here
-            _currentIndex = 0;
-            // _currentUserIndex = 0;
-            _loadStory(story: widget.stories[_currentIndex]);
-            
+          } else {
+            widget.controller?.nextPage();
           }
         });
       }
@@ -91,7 +81,6 @@ class _StoryScreenState extends State<StoryScreen>
               itemCount: widget.stories.length,
               itemBuilder: (context, i) {
                 final Story story = widget.stories[i];
-                // TODO: will be changed currentUserIndex should be changed. This might be making it go back to first.
                 if (story.isVideo) {
                   if (_videoController != null &&
                       _videoController!.value.isInitialized) {
@@ -160,18 +149,8 @@ class _StoryScreenState extends State<StoryScreen>
         if (_currentIndex - 1 >= 0) {
           _currentIndex -= 1;
           _loadStory(story: widget.stories[_currentIndex]);
-        }
-        //TODO: go back
-        // else if (_currentIndex - 1 < 0 && _currentUserIndex - 1 >= 0) {
-        //   _currentUserIndex -= 1;
-        //   _currentIndex = widget.stories.length - 1;
-        //   _loadStory(story: widget.stories[_currentIndex]);
-        // }
-        else {
-          _currentIndex = 0;
-          // _currentUserIndex = 0;
-          // _loadStory(story: widget.stories[_currentIndex]);
-          widget.controller?.nextPage();
+        } else {
+          widget.controller?.previousPage();
         }
       });
     } else if (dx > 2 * screenWidth / 3) {
@@ -179,23 +158,7 @@ class _StoryScreenState extends State<StoryScreen>
         if (_currentIndex + 1 < widget.stories.length) {
           _currentIndex += 1;
           _loadStory(story: widget.stories[_currentIndex]);
-        }
-        // TODO: Go forward
-        // else if (_currentIndex + 1 >=
-        //         widget.stories[widget.users[_currentUserIndex]]!.length &&
-        //     _currentUserIndex + 1 < widget.users.length) {
-        //   // Out of bounds - loop story
-        //   // You can also Navigator.of(context).pop() here
-        //   _currentIndex = 0;
-        //   _currentUserIndex += 1;
-        //   _loadStory(
-        //       story: widget
-        //           .stories[widget.users[_currentUserIndex]]![_currentIndex]);
-        // }
-        else {
-          _currentIndex = 0;
-          // TODO: This may be changed since we don't want to start from the beginning
-          // _loadStory(story: widget.stories[_currentIndex]);
+        } else {
           widget.controller?.nextPage();
         }
       });
