@@ -189,7 +189,7 @@ class _StoryScreenState extends State<StoryScreen>
           }
         });
     } else {
-      _animController?.duration = story.duration;
+      _animController?.duration = const Duration(seconds: 5);
       _animController?.forward();
     }
 
